@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#0A0A0A">
+<link rel="manifest" href="/hub/manifest.json">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="iLoveRunn">
+<link rel="apple-touch-icon" href="/hub/logo180.png">
+<link rel="apple-touch-icon" sizes="120x120" href="/hub/logo120.png">
+<link rel="apple-touch-icon" sizes="152x152" href="/hub/logo152.png">
+<link rel="apple-touch-icon" sizes="180x180" href="/hub/logo180.png">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="description" content="Comunidad, eventos y contenido exclusivo para runners. iLoveRunn Argentina.">
+<title>iLoveRunn</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --gold: #C9A84C;
+  --gold-light: #E8C97A;
+  --black: #0A0A0A;
+  --dark2: #161616;
+  --dark3: #222;
+  --white: #F5F5F0;
+  --gray: #666;
+  --gray2: #999;
+}
+* { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+html, body { height:100%; background:var(--black); color:var(--white); font-family:'Montserrat',sans-serif; }
+
+/* APP SHELL */
+.app {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  max-width: 430px;
+  margin: 0 auto;
+  position: relative;
+  overflow: hidden;
+}
+
+/* HEADER — fixed height */
+.header {
+  flex-shrink: 0;
+  background: rgba(10,10,10,0.97);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid #1e1e1e;
+  padding: 12px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  z-index: 10;
+}
+.logo-img { height:34px; width:auto; object-fit:contain; }
+.hdr-right { display:flex; gap:8px; }
+.icon-btn {
+  width:36px; height:36px; border-radius:50%;
+  border:1px solid var(--dark3); background:var(--dark2);
+  display:flex; align-items:center; justify-content:center;
+  font-size:16px; cursor:pointer;
+}
+
+/* SCROLL AREA — takes all remaining space */
+.scroll-area {
+  flex: 1;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* BOTTOM NAV — fixed height */
+.bottom-nav {
+  flex-shrink: 0;
+  background: rgba(10,10,10,0.97);
+  backdrop-filter: blur(24px);
+  border-top: 1px solid #1e1e1e;
+  display: flex;
+  justify-content: space-around;
+  padding: 10px 0 20px;
+  padding-bottom: calc(10px + env(safe-area-inset-bottom, 10px));
+}
+.nav-btn { display:flex; flex-direction:column; align-items:center; gap:3px; cursor:pointer; padding:4px 14px; }
+.nav-btn .ico { font-size:20px; }
+.nav-btn .lbl { font-size:9px; font-weight:700; letter-spacing:1px; text-transform:uppercase; color:var(--gray); }
+.nav-btn.active .lbl { color:var(--gold); }
+
+/* PAGES inside scroll-area */
+.page { display:none; }
+.page.active { display:block; }
+
+/* HERO */
+.hero { padding:24px 20px 16px; position:relative; overflow:hidden; }
+.hero::before {
+  content:''; position:absolute; top:-50px; right:-70px;
+  width:240px; height:240px; border-radius:50%;
+  border:55px solid rgba(201,168,76,0.04); pointer-events:none;
+}
+.eyebrow { font-size:10px; letter-spacing:3px; font-weight:700; color:var(--gold); text-transform:uppercase; margin-bottom:8px; }
+.hero-title { font-family:'Bebas Neue',sans-serif; font-size:48px; line-height:0.92; margin-bottom:10px; }
+.hero-title em { color:var(--gold); font-style:normal; display:block; }
+.hero-sub { font-size:12px; color:var(--gray2); line-height:1.6; max-width:260px; margin-bottom:18px; }
+.hero-stats { display:flex; gap:24px; }
+.stat-num { font-family:'Bebas Neue',sans-serif; font-size:26px; color:var(--gold); line-height:1; }
+.stat-lbl { font-size:9px; color:var(--gray); letter-spacing:1px; text-transform:uppercase; margin-top:2px; }
+
+/* TABS */
+.tabs { display:flex; gap:8px; padding:0 20px 18px; overflow-x:auto; scrollbar-width:none; }
+.tabs::-webkit-scrollbar { display:none; }
+.tab {
+  flex-shrink:0; padding:7px 16px; border-radius:50px;
+  font-size:11px; font-weight:700; letter-spacing:1px; text-transform:uppercase;
+  cursor:pointer; border:1px solid var(--dark3); color:var(--gray2);
+  background:transparent; transition:all .2s; user-select:none;
+}
+.tab.active { background:var(--gold); color:var(--black); border-color:var(--gold); }
+
+/* SECTION HD */
+.sec-hd { padding:0 20px 14px; display:flex; justify-content:space-between; align-items:center; }
+.sec-hd h2 { font-family:'Bebas Neue',sans-serif; font-size:20px; letter-spacing:1px; }
+.sec-hd span { font-size:10px; color:var(--gold); letter-spacing:1px; text-transform:uppercase; }
+
+/* EVENT CARDS */
+.events-list { padding:0 20px 30px; display:flex; flex-direction:column; gap:14px; }
+.event-card {
+  background:var(--dark2); border:1px solid var(--dark3);
+  border-radius:16px; overflow:hidden; cursor:pointer;
+  transition:border-color .2s; user-select:none;
+}
+.event-card:active { transform:scale(0.98); }
+.ev-img { width:100%; height:150px; overflow:hidden; position:relative; background:var(--dark3); }
+.ev-img img { width:100%; height:100%; object-fit:cover; }
+.ev-img-ph { width:100%; height:100%; display:flex; align-items:center; justify-content:center; background:linear-gradient(135deg,#1a1400,#0f0f0f); font-size:48px; }
+.ev-date { position:absolute; top:10px; left:10px; background:var(--gold); color:var(--black); border-radius:9px; padding:6px 8px; text-align:center; min-width:44px; }
+.ev-date .d { font-family:'Bebas Neue',sans-serif; font-size:22px; line-height:1; }
+.ev-date .m { font-size:8px; font-weight:700; letter-spacing:1px; text-transform:uppercase; }
+.ev-body { padding:14px 16px; }
+.ev-name { font-family:'Bebas Neue',sans-serif; font-size:22px; line-height:1.05; margin-bottom:6px; }
+.pills { display:flex; gap:6px; flex-wrap:wrap; margin-bottom:8px; }
+.pill { font-size:9px; font-weight:700; letter-spacing:1px; text-transform:uppercase; padding:2px 9px; border-radius:50px; border:1px solid var(--dark3); color:var(--gray2); }
+.pill.gold { border-color:rgba(201,168,76,.4); color:var(--gold-light); }
+.pill.red  { border-color:rgba(204,34,0,.35); color:#ff7755; }
+.ev-desc { font-size:11px; color:var(--gray); line-height:1.5; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
+
+/* LOADING */
+.loading { padding:50px 20px; text-align:center; color:var(--gray); font-size:12px; }
+.dots span { display:inline-block; width:6px; height:6px; border-radius:50%; background:var(--gold); margin:0 3px; animation:bop 1s infinite; }
+.dots span:nth-child(2) { animation-delay:.15s; }
+.dots span:nth-child(3) { animation-delay:.3s; }
+@keyframes bop { 0%,80%,100%{transform:translateY(0);opacity:.3} 40%{transform:translateY(-7px);opacity:1} }
+
+/* DETAIL PAGE */
+.detail-header { padding:12px 20px; display:flex; align-items:center; gap:12px; border-bottom:1px solid #1e1e1e; background:var(--black); position:sticky; top:0; z-index:5; }
+.back-btn { width:38px; height:38px; border-radius:50%; border:1px solid var(--dark3); background:var(--dark2); color:var(--gold); font-size:20px; cursor:pointer; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+.detail-title { font-family:'Bebas Neue',sans-serif; font-size:20px; letter-spacing:.5px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.detail-hero { width:100%; height:230px; overflow:hidden; position:relative; background:var(--dark3); }
+.detail-hero img { width:100%; height:100%; object-fit:cover; }
+.detail-hero-ph { width:100%; height:100%; display:flex; align-items:center; justify-content:center; background:linear-gradient(135deg,#1a1400,#0f0f0f); font-size:70px; }
+.detail-overlay { position:absolute; inset:0; background:linear-gradient(to top,rgba(10,10,10,.95) 0%,transparent 55%); }
+.detail-over { position:absolute; bottom:16px; left:20px; right:20px; }
+.detail-date-lbl { font-size:10px; letter-spacing:3px; font-weight:700; color:var(--gold); text-transform:uppercase; margin-bottom:4px; }
+.detail-name { font-family:'Bebas Neue',sans-serif; font-size:36px; line-height:.92; margin-bottom:10px; }
+.detail-body { padding:22px 20px 40px; }
+.excl-box { background:linear-gradient(135deg,#160f00,#0f0f0f); border:1px solid rgba(201,168,76,.25); border-radius:14px; padding:18px; margin-bottom:22px; }
+.excl-tag { display:flex; align-items:center; gap:6px; font-size:9px; font-weight:700; letter-spacing:2px; text-transform:uppercase; color:var(--gold); margin-bottom:10px; }
+.excl-tag::before { content:'★'; font-size:11px; }
+.excl-text { font-size:12px; color:#bbb; line-height:1.6; margin-bottom:12px; }
+.code-box { display:flex; align-items:center; gap:10px; background:rgba(201,168,76,.08); border:1px dashed rgba(201,168,76,.4); border-radius:10px; padding:12px 14px; cursor:pointer; }
+.code-box:active { background:rgba(201,168,76,.18); }
+.code-val { font-family:'Bebas Neue',sans-serif; font-size:24px; letter-spacing:3px; color:var(--gold); }
+.code-lbl { font-size:10px; color:var(--gray); }
+.code-copy { margin-left:auto; font-size:18px; }
+.det-sec { margin-bottom:22px; }
+.det-sec-title { font-family:'Bebas Neue',sans-serif; font-size:15px; letter-spacing:1px; color:var(--gold); margin-bottom:10px; padding-bottom:8px; border-bottom:1px solid #1e1e1e; }
+.det-sec-text { font-size:13px; color:#aaa; line-height:1.7; }
+.btn-buy { display:flex; align-items:center; justify-content:center; gap:8px; width:100%; padding:17px; background:var(--gold); color:var(--black); border:none; border-radius:12px; font-family:'Bebas Neue',sans-serif; font-size:20px; letter-spacing:2px; cursor:pointer; text-decoration:none; margin-bottom:10px; }
+.btn-buy:active { background:var(--gold-light); }
+.btn-sec { display:flex; align-items:center; justify-content:center; gap:6px; width:100%; padding:13px; background:transparent; color:var(--gray2); border:1px solid var(--dark3); border-radius:12px; font-family:'Montserrat',sans-serif; font-size:12px; font-weight:600; cursor:pointer; }
+
+/* TOAST */
+.toast { position:fixed; bottom:90px; left:50%; transform:translateX(-50%) translateY(16px); background:var(--gold); color:var(--black); font-size:12px; font-weight:700; padding:10px 20px; border-radius:50px; opacity:0; transition:all .3s; z-index:999; white-space:nowrap; pointer-events:none; }
+.toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
+
+/* iOS install banner */
+#ios-banner { display:none; position:fixed; bottom:0; left:0; right:0; max-width:430px; margin:0 auto; background:linear-gradient(135deg,#1a1400,#111); border-top:1px solid rgba(201,168,76,0.3); padding:14px 20px 30px; z-index:200; align-items:center; gap:14px; }
+#ios-banner.show { display:flex; }
+#ios-banner img { width:44px; height:44px; border-radius:10px; flex-shrink:0; }
+#ios-banner .txt strong { display:block; font-size:13px; font-weight:700; margin-bottom:2px; }
+#ios-banner .txt span { font-size:11px; color:var(--gray2); }
+#ios-banner .cls { font-size:20px; color:var(--gray); cursor:pointer; margin-left:auto; }
+</style>
+</head>
+<body>
+
+<div class="app">
+
+  <!-- HEADER -->
+  <header class="header">
+    <img class="logo-img" src="https://framerusercontent.com/images/2j7JJvp9yLwbSCiuGWZgylg8v2E.png" alt="iLoveRunn" onerror="this.style.display='none'">
+    <div class="hdr-right">
+      <div class="icon-btn" id="installBtn" onclick="triggerInstall()" style="display:none">📲</div>
+      <div class="icon-btn">🔔</div>
+    </div>
+  </header>
+
+  <!-- SCROLL AREA -->
+  <div class="scroll-area">
+
+    <!-- PAGE: HOME -->
+    <div class="page active" id="page-home">
+      <section class="hero">
+        <div class="eyebrow">▸ Buenos Aires · Argentina</div>
+        <h1 class="hero-title">Corré con<em>nosotros</em></h1>
+        <p class="hero-sub">Comunidad, eventos y contenido exclusivo para runners.</p>
+        <div class="hero-stats">
+          <div><div class="stat-num" id="totalEvs">—</div><div class="stat-lbl">Eventos</div></div>
+          <div><div class="stat-num">2026</div><div class="stat-lbl">Temporada</div></div>
+          <div><div class="stat-num">ARG</div><div class="stat-lbl">País</div></div>
+        </div>
+      </section>
+
+      <div class="tabs" id="tabsBar">
+        <div class="tab active" data-filter="todos">Todos</div>
+        <div class="tab" data-filter="trail">Trail</div>
+        <div class="tab" data-filter="urbana">Urbana</div>
+        <div class="tab" data-filter="maratón">Maratón</div>
+      </div>
+
+      <div class="sec-hd">
+        <h2>Próximos Eventos</h2>
+        <span id="evCount"></span>
+      </div>
+
+      <div class="events-list" id="eventsList">
+        <div class="loading">
+          <div class="dots"><span></span><span></span><span></span></div>
+          <p style="margin-top:12px">Cargando eventos...</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- PAGE: DETAIL -->
+    <div class="page" id="page-detail">
+      <div class="detail-header">
+        <button class="back-btn" onclick="goHome()">←</button>
+        <div class="detail-title" id="dTitle">Evento</div>
+      </div>
+      <div class="detail-hero" id="dHero">
+        <div class="detail-hero-ph">🏃</div>
+      </div>
+      <div class="detail-body">
+        <div class="excl-box">
+          <div class="excl-tag">Contenido Exclusivo · Solo App</div>
+          <div class="excl-text" id="dExcl">Accedé a tips exclusivos y contenido que no publicamos en redes.</div>
+          <div class="code-box" onclick="copyCode()">
+            <div>
+              <div class="code-lbl">Descuento exclusivo app</div>
+              <div class="code-val" id="dCode">—</div>
+            </div>
+            <span class="code-copy">📋</span>
+          </div>
+        </div>
+        <div class="det-sec">
+          <div class="det-sec-title">Sobre el evento</div>
+          <div class="det-sec-text" id="dDesc">Información próximamente.</div>
+        </div>
+        <a class="btn-buy" id="dBuyBtn" href="https://iloverunn.com" target="_blank">🎽 &nbsp; INSCRIBIRME AHORA</a>
+        <button class="btn-sec" onclick="shareEv()">📤 &nbsp; Compartir con un amigo</button>
+      </div>
+    </div>
+
+  </div><!-- end scroll-area -->
+
+  <!-- BOTTOM NAV -->
+  <nav class="bottom-nav">
+    <div class="nav-btn active"><div class="ico">🏃</div><div class="lbl">Eventos</div></div>
+    <div class="nav-btn"><div class="ico">🎽</div><div class="lbl">Pass</div></div>
+    <div class="nav-btn"><div class="ico">▶️</div><div class="lbl">Videos</div></div>
+    <div class="nav-btn"><div class="ico">👤</div><div class="lbl">Perfil</div></div>
+  </nav>
+
+</div><!-- end app -->
+
+<!-- iOS Banner -->
+<div id="ios-banner">
+  <img src="/hub/logo192.png" alt="">
+  <div class="txt">
+    <strong>Instalá iLoveRunn</strong>
+    <span>Tocá <strong style="color:var(--gold)">Compartir ⬆️</strong> → <strong style="color:var(--gold)">Agregar a inicio</strong></span>
+  </div>
+  <div class="cls" onclick="closeBanner()">✕</div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const CSV = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQQGT3kMGvxLqVSgxEkQVQYBKOs--7JU4J7rRFUVVFHn4WpFENuvTV2CXQQWRqJSaX42iJCJAGPHyHH/pub?gid=0&single=true&output=csv';
+let allEvents = [], currentEvent = null, deferredPWA = null;
+
+// PWA
+const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
+const isSafari = /safari/i.test(navigator.userAgent) && !/chrome|crios/i.test(navigator.userAgent);
+const isStandalone = window.navigator.standalone || window.matchMedia('(display-mode:standalone)').matches;
+
+function initPWA() {
+  if (isStandalone) return;
+  if (isIOS && isSafari && !sessionStorage.getItem('bc')) {
+    document.getElementById('ios-banner').classList.add('show');
+    document.getElementById('installBtn').style.display = 'flex';
+  }
+}
+function closeBanner() {
+  document.getElementById('ios-banner').classList.remove('show');
+  sessionStorage.setItem('bc','1');
+}
+function triggerInstall() {
+  if (deferredPWA) { deferredPWA.prompt(); deferredPWA.userChoice.then(()=>{deferredPWA=null;}); }
+  else if (isIOS) { document.getElementById('ios-banner').classList.add('show'); }
+}
+window.addEventListener('beforeinstallprompt', e => {
+  e.preventDefault(); deferredPWA = e;
+  document.getElementById('installBtn').style.display = 'flex';
+});
+
+// NAVIGATION
+function showPage(id) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  document.querySelector('.scroll-area').scrollTop = 0;
+}
+function goHome() { showPage('page-home'); }
+
+// CSV
+function parseCSV(txt) {
+  const lines = txt.trim().split('\n');
+  const hdrs = lines[0].split(',').map(h => h.replace(/"/g,'').trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/\s+/g,'_'));
+  return lines.slice(1).map(line => {
+    const vals=[]; let cur='', inQ=false;
+    for(const c of line){ if(c==='"'){inQ=!inQ;} else if(c===','&&!inQ){vals.push(cur.trim());cur='';} else{cur+=c;} }
+    vals.push(cur.trim());
+    const obj={}; hdrs.forEach((h,i)=>{obj[h]=(vals[i]||'').replace(/"/g,'').trim();}); return obj;
+  }).filter(ev=>ev.nombre&&ev.nombre.toLowerCase()!=='nombre');
+}
+
+function fmtDate(str) {
+  if(!str) return {d:'?',m:'???',full:'Fecha a confirmar'};
+  const p=str.split('/');
+  const MS=['ENE','FEB','MAR','ABR','MAY','JUN','JUL','AGO','SEP','OCT','NOV','DIC'];
+  const ML=['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+  const d=parseInt(p[0]); const mi=parseInt(p[1])-1;
+  return {d, m:MS[mi]||'', full:`${d} de ${ML[mi]||''} ${p[2]||'2026'}`};
+}
+
+function makePills(ev) {
+  return [
+    ev.distancia?`<span class="pill gold">${ev.distancia}</span>`:'',
+    ev.tipo?`<span class="pill">${ev.tipo}</span>`:'',
+    ev.precio?`<span class="pill red">$${Number(ev.precio).toLocaleString('es-AR')}</span>`:''
+  ].join('');
+}
+
+function renderEvents(evs) {
+  document.getElementById('totalEvs').textContent = allEvents.length;
+  document.getElementById('evCount').textContent = evs.length + ' carreras';
+  const list = document.getElementById('eventsList');
+  if(!evs.length){ list.innerHTML='<div class="loading"><p>Sin eventos en esta categoría.</p></div>'; return; }
+  list.innerHTML = evs.map(ev => {
+    const idx = allEvents.indexOf(ev);
+    const {d,m} = fmtDate(ev.fecha);
+    const hasImg = ev.imagen_url && ev.imagen_url.startsWith('http');
+    return `<div class="event-card" data-idx="${idx}">
+      <div class="ev-img">
+        ${hasImg?`<img src="${ev.imagen_url}" alt="${ev.nombre}" loading="lazy">`:`<div class="ev-img-ph">🏃</div>`}
+        <div class="ev-date"><div class="d">${d}</div><div class="m">${m}</div></div>
+      </div>
+      <div class="ev-body">
+        <div class="ev-name">${ev.nombre}</div>
+        <div class="pills">${makePills(ev)}</div>
+        <div class="ev-desc">${ev.descripcion||'Más información próximamente.'}</div>
+      </div>
+    </div>`;
+  }).join('');
+  list.querySelectorAll('.event-card').forEach(card => {
+    card.addEventListener('click', () => openDetail(parseInt(card.dataset.idx)));
+  });
+}
+
+function openDetail(idx) {
+  if(isNaN(idx)||idx<0||idx>=allEvents.length) return;
+  const ev = allEvents[idx]; if(!ev) return;
+  currentEvent = ev;
+  const {full} = fmtDate(ev.fecha);
+  const hasImg = ev.imagen_url && ev.imagen_url.startsWith('http');
+  document.getElementById('dHero').innerHTML = `
+    ${hasImg?`<img src="${ev.imagen_url}" alt="${ev.nombre}">`:`<div class="detail-hero-ph">🏃</div>`}
+    <div class="detail-overlay"></div>
+    <div class="detail-over">
+      <div class="detail-date-lbl">${full.toUpperCase()}</div>
+      <div class="detail-name">${ev.nombre}</div>
+      <div class="pills">${makePills(ev)}</div>
+    </div>`;
+  document.getElementById('dTitle').textContent = ev.nombre;
+  document.getElementById('dDesc').textContent = ev.descripcion||'Más información próximamente.';
+  document.getElementById('dExcl').textContent = ev.notas_exclusivas||'Accedé a tips exclusivos y contenido que no publicamos en redes. Solo para corredores de la app.';
+  const code = ev.codigo_descuento||'';
+  document.getElementById('dCode').textContent = code||'—';
+  document.getElementById('dBuyBtn').href = (ev.link_compra&&ev.link_compra.startsWith('http'))?ev.link_compra:'https://iloverunn.com';
+  showPage('page-detail');
+}
+
+// TABS
+document.getElementById('tabsBar').addEventListener('click', e => {
+  const tab = e.target.closest('.tab'); if(!tab) return;
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  tab.classList.add('active');
+  const f = tab.dataset.filter;
+  if(f==='todos'){renderEvents(allEvents);return;}
+  const filtered = allEvents.filter(ev=>(ev.tipo||'').toLowerCase().includes(f)||(ev.nombre||'').toLowerCase().includes(f));
+  renderEvents(filtered.length?filtered:allEvents);
+});
+
+function copyCode() {
+  const code = document.getElementById('dCode').textContent;
+  if(code==='—') return;
+  navigator.clipboard?navigator.clipboard.writeText(code).then(()=>showToast('✓ Código copiado: '+code)):showToast('Código: '+code);
+}
+function shareEv() {
+  if(!currentEvent) return;
+  const {full} = fmtDate(currentEvent.fecha);
+  const text = `¡Corré con iLoveRunn! ${currentEvent.nombre} — ${full}. iloverunn.github.io/hub 🏃`;
+  navigator.share?navigator.share({title:'iLoveRunn',text,url:'https://iloverunn.github.io/hub'}):showToast('Link: iloverunn.github.io/hub');
+}
+function showToast(msg) {
+  const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),2600);
+}
+
+async function loadEvents() {
+  try {
+    const r = await fetch(CSV);
+    const txt = await r.text();
+    allEvents = parseCSV(txt);
+    renderEvents(allEvents);
+  } catch(e) {
+    document.getElementById('eventsList').innerHTML='<div class="loading"><p style="color:#ff6655">Error cargando eventos.</p></div>';
+  }
+}
+
+if('serviceWorker' in navigator) navigator.serviceWorker.register('/hub/sw.js');
+initPWA();
+loadEvents();
+</script>
+</body>
+</html>
