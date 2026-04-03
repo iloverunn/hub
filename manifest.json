@@ -2,15 +2,15 @@
   "name": "iLoveRunn",
   "short_name": "iLoveRunn",
   "description": "Comunidad, eventos y contenido exclusivo para runners. Argentina.",
-  "start_url": "/hub/",
-  "scope": "/hub/",
+  "start_url": "https://iloverunn.github.io/hub/",
+  "scope": "https://iloverunn.github.io/hub/",
   "display": "standalone",
   "background_color": "#0A0A0A",
   "theme_color": "#0A0A0A",
   "orientation": "portrait-primary",
   "lang": "es",
   "icons": [
-    { "src": "/hub/logo192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
-    { "src": "/hub/logo512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+    { "src": "https://iloverunn.github.io/hub/logo192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
+    { "src": "https://iloverunn.github.io/hub/logo512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
   ]
 }
